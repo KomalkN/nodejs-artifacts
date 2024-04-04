@@ -1,0 +1,24 @@
+name: Process Artifact
+
+on:
+  workflow_run:   
+    workflows: ["Build and Store Artifact"] 
+    types: 
+      - completed  
+
+jobs:
+  process_artifact:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: my-artifact 
+      - name: Process the artifact
+        run: | 
+          artifactData=$(cat data.json)
+          timestamp=$(echo $artifactData | jq '.timestamp')
+          message=$(echo $artifactData | jq '.message')
+          echo "Artifact generated at: $timestamp"
+          echo "Message from artifact: $message"
